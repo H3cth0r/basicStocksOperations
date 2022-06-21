@@ -1,2 +1,3 @@
 # basicStocksOperations
-Basic implementation of basic indicators or operations for stock analysis.
+This is a basic project in which I'll apply some basic stock indicators
+in C++, with python bindings.
