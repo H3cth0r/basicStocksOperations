@@ -13,6 +13,7 @@ namespace sops{
     template<int LEN>
     struct dataFrame{
         int    df_length = LEN;
+        std::string Date[LEN];
         double Open[LEN];
         double High[LEN];
         double Low[LEN];
@@ -21,24 +22,41 @@ namespace sops{
         double Volume[LEN];
     };
 
-    template<int LEN>
-    int* split_line(std::string line){
+    template<int COLS>
+    std::string* split_line(std::string line){
+        std::string res[COLS];
+        int pos_start = 0;
+        int pos_end;
+        int delim_len = 1;      // ",".length() == 1
+        std::string token;
+        int i = 0;
         
-    } 
-
-    template<int LEN>
-    dataFrame<LEN> read_csv(std::string csv_path){
-
-        // Opening file
-        std::fstream file(csv_path, std::ios::in);
-
-        // Check if founded the file
-        if(file.is_open()){
-
-        } else{
-            std::cout << "Unable to open/find the file."
+        while((pos_end=line.find(',', pos_start)) != std::string::npos){
+            token = line.substr(pos_start, pos_end - pos_start);
+            pos_start = pos_end + delim_len;
+            res[i] = token;
+            std::cout << token << ", ";
+            i++;
         }
+        std::cout << "\n";
+        
+        return res;
     }
+    // template<int LEN>
+    // dataFrame<LEN> read_csv(std::string csv_path){
+    //     std::string line;
+    //     std::string line_to_array[LEN];
+
+    //     // Opening file
+    //     std::fstream file(csv_path, std::ios::in);
+
+    //     // Check if founded the file
+    //     if(file.is_open()){
+
+    //     } else{
+    //         std::cout << "Unable to open/find the file."
+    //     }
+    // }
 
 
 }

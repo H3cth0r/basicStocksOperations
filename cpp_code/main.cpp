@@ -18,5 +18,14 @@ int main(){
     }
     std::cout << "\n";
 
+    std::string line = "2021-06-21,184.3524932861328,185.36500549316406,178.2274932861328,184.2725067138672,184.14715576171875,67238400";
+    std::string something[7];
+    std::string * res = sops::split_line<7>(line);
+    
+    for(int i = 0; i < 7; i++){
+        std::cout << res[i] << ", ";
+    }
+    std::cout << "\n";
+
     return 0;
 }
