@@ -5,6 +5,7 @@
 #include <fstream>
 #include <array>
 #include <sstream>
+#include <cmath>
 
 namespace ezfunc{
 
@@ -37,6 +38,8 @@ namespace sops{
       std::array<double, LEN> Returns;
 
       double AvgReturns = 0;
+      double VarianceReturns = 0;
+      double StandardDeviation = 0;
 
       /*
        * @brief
@@ -57,12 +60,17 @@ namespace sops{
 
       /*
        * @brief
-       * Method for printing the average returns on the df.
+       * Method for printing general information about the dataframe.
        */
-      void printAvgReturns(){
-        std::cout << "Average Returns\nDecimal:\t"
-        << AvgReturns << "\nPercentage:\t" << AvgReturns*100 << "%\n";  
+      void printGeneralData(){
+        std::cout << "Average Returns:\t" << AvgReturns <<
+          "\n\t\t\t\t\t" << AvgReturns * 100 << "%" << 
+          "\nVariance Returns:\t" << VarianceReturns <<
+          "\n\t\t\t\t\t" << VarianceReturns * 100 << "%" <<
+          "\nStandard Deviation:\t"<< StandardDeviation <<
+          "\n";
       }
+
     };
 
     /*
@@ -94,6 +102,59 @@ namespace sops{
         df.AvgReturns += df.Returns[i];
       }
       df.AvgReturns = df.AvgReturns/LEN;
+    }
+
+    /*
+     * @brief
+     * Method for calculating the variance returns
+     * @param  df  reference to dataframe working on.
+     */
+    template<int LEN>
+    void varianceReturns(dataFrame<LEN> & df){
+      for(int i = 0; i < LEN; i++){
+        df.VarianceReturns += std::pow(df.Returns[i]-df.AvgReturns, 2);
+      }
+      df.VarianceReturns = df.VarianceReturns / LEN;
+    }
+
+    /*
+     * @brief
+     * Mathod for calculating the standard deviation.
+     * @param  df  reference to dataframe working on.
+     */
+    template<int LEN>
+    void stdDeviation(dataFrame<LEN> & df){
+      df.StandardDeviation = std::pow(df.VarianceReturns, 0.5);
+    }
+
+    /*
+     * @brief
+     * Method for calculating the covariance between two sets of
+     * stocks.
+     * @param  dfX    reference to dataFrame X.
+     *         dfY    reference to dataFrame Y.
+     *         result reference to result variable.
+     */
+    template<int LEN>
+    void covariance(dataFrame<LEN> & dfX, dataFrame<LEN> & dfY, double & result){
+      for(int i = 0; i < LEN; i++){
+        result += (dfX.Returns[i] * dfY.Returns[i]);
+      }
+      result = (result/LEN) - (dfX.AvgReturns * dfY.AvgReturns);
+    }
+
+    /*
+     * @brief
+     * Method for calculating the correlation between two sets of
+     * stocks.
+     * @param  dfX    reference to dataFrame X.
+     *         dfY    reference to dataFrame Y.
+     *         covar  reference to variable that contains covariance.
+     *         result reference to variable for corr resutl.
+     */
+    template<int LEN>
+    void correlation(dataFrame<LEN> & dfX, dataFrame<LEN> & dfY, double & covar,double & result){
+      result = (covar) / (std::sqrt(dfX.VarianceReturns) * std::sqrt(dfY.VarianceReturns)); 
     }
 
     /*
