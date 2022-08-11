@@ -1,6 +1,8 @@
 #ifndef SOPS
 #define SOPS
 
+#include <pthread.h>
+#include <thread>
 #include <iostream>
 #include <fstream>
 #include <array>
@@ -233,7 +235,7 @@ namespace sops{
     void readCsv(std::string fileNameNPath, dataFrame<LEN> & df){
       std::fstream file(fileNameNPath);
       if(file.is_open()){
-        std::cout << "** Able to open file path **\n";
+        //std::cout << "** Able to open file path **\n";
         readLines(file, df);
       }else{
         std::cout << "File not found or error on path **\n";
@@ -273,6 +275,76 @@ namespace sops{
       return 0;
     }
 
+    /*
+     * @brief
+     * Method executes every necessary method to get the basic
+     * and relevant information about a dataset.
+     * @param    df      structure object of the dataframe.
+     *           dfPath  name and path to the csv.
+     */
+    template<int LEN>
+    void executeAll(dataFrame<LEN> & df, std::string & dfPath){
+      df.Ticker = dfPath;
+      readCsv(dfPath, df);
+      closingReturns(df);
+      averageReturns(df);
+      varianceReturns(df);
+      stdDeviation(df);
+    }
+
+    /*
+     * @brief
+     * Method that will get multithreaded, which takes a range of 
+     * the array of dataFrames and paths.
+     *
+     * @param  min    specifies the min number of the range.
+     *
+     *         max    specifies the max number of the range.
+     *
+     *         dfs    reference to dataFrames structures array.
+     *
+     *         dfsPaths reference to array of the paths.
+     */
+    template<int NumDfs, int LEN>
+    void multiThreadSol(int min, int max, std::array<dataFrame<LEN>, NumDfs> & dfs, std::array<std::string, NumDfs> & dfsPaths){
+      //std::cout << "min: " << min << "\tmax: " << max << "\n";
+      for(int i = min; i < max; i++){
+        //std::cout << "path: " << dfsPaths[i] << "\n";
+        executeAll(dfs[i], dfsPaths[i]);
+      }
+      
+    }
+  
+    /*
+     * @brief
+     * Method for reading many dataframes and creating many
+     * dataframe structures. Applies multiple threads for 
+     * a faster implementation.
+     *
+     * @param    dfsPaths      array of file names and paths
+     *                         for reading and opening the cvs.
+     *            
+     *
+     * @param    dfs            reference to array that contains the
+     *                          dataFrame structures.
+     *
+     * @param    numThreads     Number of threads to execute the 
+     *                          program.
+     * 
+     */
+    template<int NumDfs, int LEN>
+    void manyDfs(std::array<std::string, NumDfs> & dfsPaths, std::array<dataFrame<LEN>, NumDfs> & dfs, int numThreads){
+      std::array<std::thread, NumDfs> threads;
+      int steps = NumDfs/numThreads;
+      int aux_min = 0;
+      for(int i = 0; i < numThreads; i++){
+        threads[i] = std::thread(multiThreadSol<NumDfs, LEN>, aux_min, aux_min + steps, std::ref(dfs), std::ref(dfsPaths));
+        aux_min += steps;
+      }
+      for(int i = 0; i < numThreads; i++){
+        threads[i].join();
+      }
+    }
 }
 
 
