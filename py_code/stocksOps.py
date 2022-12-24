@@ -483,3 +483,11 @@ def anotherNormalizerDataset(df_t):
 	normalizer = StandardScaler()
 	df_t[["Open", "High", "Low", "Close", "Adj Close", "Volume"]] = normalizer.fit_transform(df_t[["Open", "High", "Low", "Close", "Adj Close", "Volume"]])
 	
+def cleanDataFrame(df_t, max_period):
+	"""
+	Method that will clean the dataframe.
+	- Checks each column for the last 0.0000 and and well just
+	  use the rows after this index (for some normalization problems).
+	"""
+	df_t.drop(df_t.index[0:max_period], inplace=True)
+	return df_t
