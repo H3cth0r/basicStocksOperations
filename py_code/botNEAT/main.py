@@ -1,10 +1,10 @@
 
-"""
-TODO
-- Consider as an output the quantity to sell or buy.
-"""
+import os
 
+from neatFunctionality import *
 
 
 if __name__ == "__main__":
-    pass
+    local_dir = os.path.dirname(__file__)
+    config_file_path = os.path.join(local_dir, "config.txt")
+    run(config_file_path)
