@@ -28,7 +28,7 @@ sys.path.append("..")
 import stocksOps as so
 
 class Trader():
-    def __init__(self, tickerName_t, credit_t, df_t, idt_t):
+    def __init__(self, tickerName_t, credit_t, df_t, idt_t, raised_to_t):
 
         # Trader Id 
         self.id = idt_t
@@ -54,6 +54,8 @@ class Trader():
 
         self.last_credit        = credit_t
 
+        self.raised_to          =   raised_to_t
+
         self.credit_hist        = []
         self.holdings_hist      = []
         self.selled_hist        = []
@@ -72,25 +74,25 @@ class Trader():
 
     # Method for placing an order
     def buy(self, quantity_t):
-        if (quantity_t * (10**3)) > 0 and (quantity_t * (10**3)) * self.closings[0] < self.credit:
-            self.holdings = self.holdings + (quantity_t * (10**3))
-            self.credit = self.credit - ((quantity_t * (10**3)) * self.closings[0])
-            self.bought = ((quantity_t * (10**3)) * self.closings[0])
+        if (quantity_t * (10**self.raised_to)) > 0 and (quantity_t * (10**self.raised_to)) * self.closings[0] < self.credit:
+            self.holdings = self.holdings + (quantity_t * (10**self.raised_to))
+            self.credit = self.credit - ((quantity_t * (10**self.raised_to)) * self.closings[0])
+            self.bought = ((quantity_t * (10**self.raised_to)) * self.closings[0])
 
-            self.bought_hist += [(quantity_t * (10**3)) * self.closings[0]]
+            self.bought_hist += [(quantity_t * (10**self.raised_to)) * self.closings[0]]
         else:self.bought_hist += [0]
 
 
     # Method for selling stock
     def sell(self, quantity_t):
         #self.selled = -1
-        if (quantity_t * (10**3)) > 0 and (quantity_t * (10**3)) < self.holdings:
+        if (quantity_t * (10**self.raised_to)) > 0 and (quantity_t * (10**self.raised_to)) < self.holdings:
             #print(f"=====>>>>>    This is the quantity for selling option : {quantity_t}")
-            self.holdings = self.holdings - (quantity_t * (10**3))
-            self.credit = self.credit + ((quantity_t * (10**3)) * self.closings[0])
-            self.selled = ((quantity_t * (10**3)) * self.closings[0])
+            self.holdings = self.holdings - (quantity_t * (10**self.raised_to))
+            self.credit = self.credit + ((quantity_t * (10**self.raised_to)) * self.closings[0])
+            self.selled = ((quantity_t * (10**self.raised_to)) * self.closings[0])
 
-            self.selled_hist += [(quantity_t * (10**3)) * self.closings[0]]
+            self.selled_hist += [(quantity_t * (10**self.raised_to)) * self.closings[0]]
         else: self.selled_hist += [0]
             
 
@@ -116,8 +118,8 @@ class Trader():
                  Forward PE ratio, PEG ratio]
         """
         # TODO define the inputs on the config file
-        current_credit = self.credit * (10**-3)
-        current_holdings = self.holdings * (10**-3)
+        current_credit = self.credit * (10**-self.raised_to)
+        current_holdings = self.holdings * (10**-self.raised_to)
         return self.input_list.pop(0) + [current_credit, current_holdings]
     
     def update(self):

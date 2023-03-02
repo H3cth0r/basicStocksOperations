@@ -1,8 +1,8 @@
 
 import neat
-import os
 
 import matplotlib.pyplot as plt
+import pickle
 
 
 import sys
@@ -30,10 +30,9 @@ def evaluate_genomes(genomes, config):
     ge          =   []
     nets        =   []
 
-    df = so.downloadIntradayData("NVDA")
 
     for genome_id, genome in genomes:
-        traders.append(Trader("NVDA", 100, df.copy(deep=True), genome_id))                    # FIXME fix initialization
+        traders.append(Trader("NVDA", 100, df.copy(deep=True), genome_id, 3))                    # FIXME fix initialization
         traders[-1].prepareData()                        # Data preparartion
 
         ge.append(genome)
@@ -112,7 +111,7 @@ def evaluate_genomes(genomes, config):
 
                 """
                 plt.figure(figsize=(25,8))
-                plt.plot(td.credit_hist, '-gD', label = "credit")
+                plt.plot(td.credit_hist, label = "credit")
 
                 #plt.show()
                 #plt.plot(td.holdings_hist)
@@ -155,5 +154,9 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
 
+    global df
+    df = so.downloadIntradayData("NVDA")
 
-    pop.run(evaluate_genomes, 50)
+    winner = pop.run(evaluate_genomes, 2)
+    with open('best_genome.pkl', 'wb') as f:
+        pickle.dump(winner, f)
