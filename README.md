@@ -13,3 +13,4 @@ stock in wich the trading-bot should operate with for generating profits.
 - Set the condition that if the best credit is too different (by some percentage), then change this credit,
   must consider that this inclide min and max range.
 - This is a test line
+- Another test line
